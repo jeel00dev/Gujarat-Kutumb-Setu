@@ -1,0 +1,61 @@
+digraph statewide {
+  graph [rankdir=TB, bgcolor="#FFFFFF", pad="0.5", nodesep="0.55", ranksep="0.62", splines=ortho,
+    fontname="DejaVu Sans", fontsize=26, labelloc=t, labeljust=l,
+    label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0"><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="28"><B>Statewide Service Architecture</B></FONT></TD><TD WIDTH="170"></TD><TD BGCOLOR="#263F69" BORDER="1" COLOR="#D06A1C" CELLPADDING="10"><FONT COLOR="white" POINT-SIZE="15"><B>PROPOSED STATEWIDE TARGET</B></FONT></TD></TR><TR><TD ALIGN="LEFT" COLSPAN="3"><FONT COLOR="#43566F" POINT-SIZE="13">Gujarat Kutumb Setu  |  Scale-out design subject to measured capacity, security and policy acceptance</FONT></TD></TR></TABLE>>];
+  node [shape=box, style="rounded,filled", fillcolor="#FFFFFF", color="#5B88AA", penwidth=1.3, fontname="DejaVu Sans", fontsize=10.5, margin="0.18,0.13"];
+  edge [color="#6D9BBC", penwidth=1.15, fontcolor="#24364B", fontname="DejaVu Sans", fontsize=9, arrowsize=0.72];
+
+  users [shape=plain, label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>STATEWIDE ACCESS</B></FONT></TD></TR><TR><TD>Residents · assisted centres · staff<BR/>Authorized departments and service clients</TD></TR></TABLE>>];
+  entry [shape=plain, label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>CONTROLLED EDGE</B></FONT></TD></TR><TR><TD>TLS · DDoS/rate controls · redundant load balancers<BR/>Public assets separated from private APIs</TD></TR></TABLE>>];
+
+  subgraph cluster_services {
+    label=<<FONT COLOR="#263F69" POINT-SIZE="14"><B>APPLICATION FAILURE DOMAINS</B></FONT><BR/><FONT COLOR="#43566F" POINT-SIZE="10">Horizontally scalable and independently observable</FONT>>;
+    color="#5B88AA"; penwidth=1.4; style="rounded,dashed"; margin=22;
+    service_anchor [shape=point, width=0.01, label="", style=invis, group="spine"];
+    api [shape=plain, label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>STATELESS API REPLICAS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Object, field and purpose authorization<BR/>Bounded pools · read-your-write routes</TD></TR></TABLE>>];
+    gateway [shape=plain, label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>INTEGRATION GATEWAY</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Approved clients · scopes · quotas<BR/>Versioned minimal-data contracts</TD></TR></TABLE>>];
+    workers [label="WORKER POOLS\nOutbox delivery · reconciliation\nNotifications · retry · dead letters", fillcolor="#C65D0B", color="#C65D0B", fontcolor="white"];
+    { rank=same; api; gateway; workers; }
+    service_anchor -> api [style=invis, weight=80];
+  }
+
+  subgraph cluster_data {
+    label=<<FONT COLOR="#263F69" POINT-SIZE="14"><B>PROTECTED DATA TIER</B></FONT><BR/><FONT COLOR="#43566F" POINT-SIZE="10">Authoritative writes, monitored replicas and recoverable evidence</FONT>>;
+    color="#557B2C"; penwidth=1.4; style="rounded,dashed"; margin=22;
+    data_anchor [shape=point, width=0.01, label="", style=invis, group="spine"];
+    primary [shape=cylinder, label="POSTGRESQL PRIMARY\nRegistry · workflows · outbox\nMeasured indexes · history partitions", fillcolor="#FFFFFF", color="#5B88AA", height=1.15];
+    replicas [shape=cylinder, label="STANDBY / READ REPLICAS\nLag monitoring · fenced failover\nNo stale reads for final decisions", fillcolor="#FFFFFF", color="#5B88AA", height=1.15];
+    object [shape=folder, label="EVIDENCE STORAGE\nEncryption · quarantine · expiry\nShort-lived authorized downloads", fillcolor="#F3F7FA", color="#5B88AA"];
+    bus [shape=plain, label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>DURABLE EVENT DISTRIBUTION</B></FONT></TD></TR><TR><TD>Transactional outbox first<BR/>Broker only when measured need warrants</TD></TR></TABLE>>];
+    { rank=same; primary; replicas; object; bus; }
+    data_anchor -> primary [style=invis, weight=80];
+  }
+
+  external [shape=plain, label=<<TABLE BORDER="1" COLOR="#D06A1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>APPROVED GOVERNMENT OWNERS</B></FONT></TD></TR><TR><TD>PDS · civil registration · certificates<BR/>Scheme decisions and benefit reports<BR/>Separate mandate + data agreement</TD></TR></TABLE>>];
+  analytics [shape=plain, label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>MINIMIZED ANALYTICS</B></FONT></TD></TR><TR><TD>Coverage · quality · backlog<BR/>Reviewed projections · suppression<BR/>Not a census</TD></TR></TABLE>>];
+  operations [shape=plain, label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>PRIVATE OPERATIONS</B></FONT></TD></TR><TR><TD>Metrics · alerts · protected audit export<BR/>Named on-call · incident runbooks</TD></TR></TABLE>>];
+  recovery [shape=folder, label="SEPARATE RECOVERY ENVIRONMENT\nEncrypted base backups + WAL archive\nRestore and reconciliation drills", fillcolor="#EDF4E6", color="#557B2C"];
+  gate [shape=note, label="TARGET ACCEPTANCE GATE\nLoad + failover + restoration tests\nThreat model · privacy review · owner approvals\nCapacity is measured, never inferred from population", fillcolor="#FFF7ED", color="#D06A1C"];
+
+  users -> entry;
+  service_anchor -> data_anchor [style=invis, weight=120, minlen=3];
+  entry -> api [label="citizen / staff APIs"];
+  entry -> gateway [label="department APIs"];
+  api -> primary [label="core writes"];
+  api -> object [label="authorized evidence"];
+  gateway -> api [label="minimal operations"];
+  primary -> replicas [label="replication · not backup"];
+  primary -> bus [label="committed events"];
+  bus -> workers [label="claim / replay", dir=both];
+  workers -> external [label="owner-approved adapters"];
+  external -> gateway [label="scoped source events"];
+  replicas -> analytics [label="reviewed projection"];
+  primary -> recovery [label="backup + WAL"];
+  api -> operations [style=dashed, label="privacy-safe telemetry"];
+  workers -> operations [style=dashed];
+  { rank=same; external; analytics; operations; recovery; }
+  analytics -> gate [style=invis];
+
+  legend [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" COLOR="#B7C9D8" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>SERVICE</B></FONT></TD><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>INTEGRATION / PROCESS</B></FONT></TD><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>CONTROL / RELIABILITY</B></FONT></TD><TD BGCOLOR="#FFFFFF"><FONT COLOR="#34556D"><B>DATA STORE</B></FONT></TD></TR></TABLE>>];
+  gate -> legend [style=invis];
+}

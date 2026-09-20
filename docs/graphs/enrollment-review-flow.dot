@@ -1,0 +1,57 @@
+digraph workflow {
+  graph [rankdir=TB, bgcolor="#FFFFFF", pad="0.45", nodesep="0.42", ranksep="0.54", splines=ortho, fontname="DejaVu Sans", fontsize=26, labelloc=t, labeljust=l,
+    label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0"><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="28"><B>Enrollment &amp; Controlled Review</B></FONT></TD><TD WIDTH="130"></TD><TD BGCOLOR="#263F69" BORDER="1" COLOR="#557B2C" CELLPADDING="10"><FONT COLOR="white" POINT-SIZE="15"><B>ACTUAL LOCAL WORKFLOW</B></FONT></TD></TR><TR><TD ALIGN="LEFT" COLSPAN="3"><FONT COLOR="#43566F" POINT-SIZE="13">Gujarat Kutumb Setu  |  One family – one authoritative record</FONT></TD></TR></TABLE>>];
+  node [shape=box, style="rounded,filled", fillcolor="#FFFFFF", color="#5B88AA", penwidth=1.3, fontname="DejaVu Sans", fontsize=11, margin="0.18,0.12"];
+  edge [color="#6D9BBC", penwidth=1.15, fontcolor="#24364B", fontname="DejaVu Sans", fontsize=9.5, arrowsize=0.72];
+
+  start [shape=circle, fixedsize=true, width=0.55, label="", fillcolor="#62676C", color="#62676C"];
+  portal [label="KUTUMB SETU PORTAL\nCitizen / assisted service centre", fillcolor="#263F69", color="#263F69", fontcolor="white", fontsize=13];
+  auth [label="Family ID or registered mobile\nOTP challenge and verification", fillcolor="#F7C8A8", color="#D06A1C"];
+  source [shape=diamond, label="Known ration / registry\nreference?", fillcolor="#FFF7ED", color="#D06A1C", width=2.0, height=1.0];
+  match [label="Authorized own match\nUse current family record or\nrequest a controlled correction", fillcolor="#EDF4E6", color="#557B2C"];
+  privacy [label="Wrong, uncertain or no source match\nGive privacy-safe guidance\nNever expose another family", fillcolor="#FFF7ED", color="#D06A1C"];
+  draft [label="SAVE ENROLLMENT DRAFT\nApplicant · address · members\nVersioned declarations", fillcolor="#C65D0B", color="#C65D0B", fontcolor="white", fontsize=12];
+  submit [label="SUBMIT APPLICATION\nServer validation · revision · idempotency\nApplication reference issued", fillcolor="#C65D0B", color="#C65D0B", fontcolor="white", fontsize=12];
+
+  subgraph cluster_verification {
+    label=<<FONT COLOR="#263F69" POINT-SIZE="14"><B>VERIFICATION PROCESS</B></FONT><BR/><FONT COLOR="#43566F" POINT-SIZE="10">Separation of duties · jurisdiction checks · reasoned decisions</FONT>>;
+    color="#5B88AA"; penwidth=1.4; style="rounded,dashed"; margin=24;
+    verify [label="VERIFYING AUTHORITY\nStart review · examine evidence\nRecord reason and provenance", fillcolor="#EDF4E6", color="#557B2C"];
+    review [shape=diamond, label="Evidence\nsufficient?", fillcolor="#FFFFFF", color="#5B88AA", width=1.7, height=1.0];
+    information [label="NEEDS INFORMATION\nResident revises and resubmits\nFull history retained", fillcolor="#FFF7ED", color="#D06A1C"];
+    verified [label="VERIFIED\nVerification complete\nNo final approval yet", fillcolor="#EDF4E6", color="#557B2C"];
+    approver [shape=diamond, label="Independent approver\ndecision?", fillcolor="#FFFFFF", color="#557B2C", width=2.0, height=1.0];
+    rejected [label="REJECTED\nReason recorded · appeal available\nNo Family ID issued", fillcolor="#F8EEE8", color="#91450F"];
+    appeal [label="APPEAL / RECONSIDERATION\nNew controlled review case", fillcolor="#FFF7ED", color="#D06A1C"];
+    issue [label="APPROVE &amp; IMPLEMENT\nCreate family, persons and memberships\nIssue Family ID · audit · outbox", fillcolor="#557B2C", color="#557B2C", fontcolor="white", fontsize=12];
+  }
+
+  familydb [shape=cylinder, label="FAMILY REGISTRY\nCurrent approved record\nTemporal history retained", fillcolor="#F3F7FA", color="#5B88AA", height=1.05];
+  dashboard [label="FAMILY DASHBOARD &amp; RECEIPT\nMembers · changes · scheme discovery\nID alone does not award a benefit", fillcolor="#263F69", color="#263F69", fontcolor="white"];
+  change [label="LATER CHANGE REQUEST\nPending case never overwrites\nthe approved current record", fillcolor="#C65D0B", color="#C65D0B", fontcolor="white"];
+  end [shape=circle, fixedsize=true, width=0.55, label="", fillcolor="#62676C", color="#62676C"];
+
+  { rank=same; match; privacy; }
+  start -> portal -> auth -> source;
+  source -> match [label="own match"];
+  source -> privacy [label="unclear"];
+  source -> draft [label="new / no source"];
+  privacy -> draft [label="independent enrollment"];
+  draft -> submit -> verify;
+  verify -> review;
+  review -> information [label="no · clarify"];
+  information -> submit [label="revise & resubmit"];
+  review -> verified [label="yes"];
+  verified -> approver;
+  approver -> rejected [label="reject"];
+  rejected -> appeal -> verify;
+  approver -> issue [label="approve"];
+  issue -> familydb [label="single transaction"];
+  familydb -> dashboard -> change;
+  match -> familydb [label="existing record"];
+  change -> submit [style=dashed, label="new controlled case", constraint=false];
+  dashboard -> end;
+
+  legend [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" COLOR="#B7C9D8" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>PORTAL / OUTPUT</B></FONT></TD><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>ACTION</B></FONT></TD><TD BGCOLOR="#EDF4E6"><FONT COLOR="#33531C"><B>AUTHORITY / APPROVED</B></FONT></TD><TD BGCOLOR="#FFF7ED"><FONT COLOR="#7A3A0B"><B>REVIEW / EXCEPTION</B></FONT></TD></TR></TABLE>>];
+  end -> legend [style=invis];
+}

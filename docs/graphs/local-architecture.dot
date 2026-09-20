@@ -1,0 +1,45 @@
+digraph local {
+  graph [rankdir=TB, newrank=true, bgcolor="#FFFFFF", pad="0.5", nodesep="0.48", ranksep="0.68", splines=ortho,
+    fontname="DejaVu Sans", fontsize=26, labelloc=t, labeljust=l,
+    label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0"><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="28"><B>Local Deployment Architecture</B></FONT></TD><TD WIDTH="155"></TD><TD BGCOLOR="#263F69" BORDER="1" COLOR="#557B2C" CELLPADDING="10"><FONT COLOR="white" POINT-SIZE="15"><B>ACTUAL LOCAL IMPLEMENTATION</B></FONT></TD></TR><TR><TD ALIGN="LEFT" COLSPAN="3"><FONT COLOR="#43566F" POINT-SIZE="13">Gujarat Kutumb Setu  |  Production-shaped services running on one test machine</FONT></TD></TR></TABLE>>];
+  node [shape=box, style="rounded,filled", fillcolor="#FFFFFF", color="#5B88AA", penwidth=1.3, fontname="DejaVu Sans", fontsize=10.5, margin="0.18,0.13"];
+  edge [color="#6D9BBC", penwidth=1.15, fontcolor="#24364B", fontname="DejaVu Sans", fontsize=9, arrowsize=0.72];
+
+  users [shape=plain, label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>ACCESS CHANNELS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Resident · assisted operator<BR/>Verifier · approver · administrator<BR/>Gujarati and English web browser</TD></TR></TABLE>>];
+
+  subgraph cluster_machine {
+    label=<<FONT COLOR="#263F69" POINT-SIZE="14"><B>DOCKER COMPOSE · THIS MACHINE</B></FONT><BR/><FONT COLOR="#43566F" POINT-SIZE="10">Single-host persistence for functional acceptance; not production high availability</FONT>>;
+    color="#5B88AA"; penwidth=1.4; style="rounded,dashed"; margin=24;
+
+    web [shape=plain, label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>WEB ENTRY</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Nginx + compiled React frontend<BR/>127.0.0.1:8095<BR/>Same-origin /api proxy · security headers</TD></TR></TABLE>>];
+    api [shape=plain, label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>APPLICATION API</B></FONT></TD></TR><TR><TD ALIGN="LEFT">FastAPI modular service<BR/>Policy authorization · validation · workflows<BR/>Internal port 8000 · bounded lists</TD></TR></TABLE>>];
+    identity [label="IDENTITY ADAPTER\nFamily ID / mobile → OTP\nSimulated locally · no live SMS or e-KYC", fillcolor="#C65D0B", color="#C65D0B", fontcolor="white"];
+    db [shape=cylinder, label="POSTGRESQL 17\nRegistry · cases · audit\nIdempotency · durable outbox\nPersistent local bind volume", fillcolor="#FFFFFF", color="#5B88AA", height=1.25];
+    evidence [shape=folder, label="PROTECTED EVIDENCE STORE\nAuthorized file references\nLocal quarantine, not malware certification", fillcolor="#F3F7FA", color="#5B88AA"];
+    worker [shape=plain, label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>OUTBOX WORKER</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Bounded claim · retry · delivery receipt<BR/>Synthetic local delivery sink</TD></TR></TABLE>>];
+    migration [label="MIGRATE &amp; SEED\nAlembic schema before readiness\nSynthetic repeatable fixtures", fillcolor="#C65D0B", color="#C65D0B", fontcolor="white"];
+
+    { rank=same; web; api; }
+    { rank=same; identity; db; evidence; }
+    { rank=same; worker; migration; }
+
+    web -> api [label="HTTP /api/v1"];
+    api -> db [label="transactional SQL"];
+    db -> api [label="committed state", constraint=false];
+    api -> identity [label="challenge / verify"];
+    api -> evidence [label="authorized access"];
+    worker -> db [label="claim + delivery state", dir=both];
+    migration -> db [label="before API readiness", style=dashed];
+  }
+
+  external [shape=plain, label=<<TABLE BORDER="1" COLOR="#91450F" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#91450F"><FONT COLOR="white"><B>PRODUCTION-ONLY ADAPTERS</B></FONT></TD></TR><TR><TD ALIGN="LEFT"><FONT COLOR="#6F3108">PDS · UIDAI-authorized identity · SMS<BR/>Payment/reporting providers<BR/><B>Not connected in local implementation</B></FONT></TD></TR></TABLE>>];
+  caution [shape=note, label="ACCEPTANCE BOUNDARY\nSynthetic identities and outcomes only\nLoopback access · no third-party runtime\nAvailability and throughput are not certified", fillcolor="#FFF7ED", color="#D06A1C"];
+
+  users -> web [label="local HTTP"];
+  api -> external [label="approved adapter later", style=dashed, color="#91450F", fontcolor="#6F3108"];
+  evidence -> caution [style=invis];
+  { rank=same; external; caution; }
+
+  legend [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" COLOR="#B7C9D8" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>SERVICE</B></FONT></TD><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>ADAPTER / ACTION</B></FONT></TD><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>DURABLE PROCESS</B></FONT></TD><TD BGCOLOR="#FFFFFF"><FONT COLOR="#34556D"><B>DATA STORE</B></FONT></TD></TR></TABLE>>];
+  caution -> legend [style=invis];
+}

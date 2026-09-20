@@ -1,0 +1,23 @@
+{
+  "name": "gujarat-kutumb-setu-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Synthetic local family registry demo and acceptance tooling",
+  "scripts": {
+    "start": "bash scripts/local.sh start",
+    "start:images": "docker compose up -d --build",
+    "stop": "bash scripts/local.sh stop",
+    "status": "bash scripts/local.sh status",
+    "logs": "bash scripts/local.sh logs",
+    "backup": "bash scripts/backup.sh",
+    "test:e2e": "playwright test",
+    "test:api": "node scripts/api-smoke.mjs",
+    "test:load": "node scripts/load-test.mjs",
+    "build": "npm --prefix frontend run build",
+    "graphs": "python3 docs/graphs/render.py"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "@axe-core/playwright": "4.11.1"
+  }
+}

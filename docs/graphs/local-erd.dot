@@ -1,0 +1,109 @@
+digraph erd {
+  graph [rankdir=TB, newrank=true, bgcolor="#FFFFFF", pad="0.48", nodesep="0.36", ranksep="0.60", splines=spline,
+    fontname="DejaVu Sans", fontsize=26, labelloc=t, labeljust=l,
+    label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0"><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="28"><B>Implemented Database Relationships</B></FONT></TD><TD WIDTH="170"></TD><TD BGCOLOR="#263F69" BORDER="1" COLOR="#557B2C" CELLPADDING="10"><FONT COLOR="white" POINT-SIZE="15"><B>ACTUAL LOCAL · 29 TABLES</B></FONT></TD></TR><TR><TD ALIGN="LEFT" COLSPAN="3"><FONT COLOR="#43566F" POINT-SIZE="13">Gujarat Kutumb Setu  |  Core foreign-key paths; repeated actor and audit links omitted for clarity</FONT></TD></TR></TABLE>>];
+  node [shape=plain, fontname="DejaVu Sans", fontsize=9.5];
+  edge [color="#86A9C1", penwidth=1.0, fontcolor="#31465C", fontname="DejaVu Sans", fontsize=8.3, arrowsize=0.62, constraint=false];
+
+  subgraph cluster_registry {
+    label=<<FONT COLOR="#33531C" POINT-SIZE="14"><B>IDENTITY &amp; TEMPORAL FAMILY REGISTRY</B></FONT>>;
+    color="#557B2C"; style="rounded,dashed"; penwidth=1.4; margin=20;
+    registry_anchor [shape=point, width=0.01, label="", style=invis, group="spine"];
+    users [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>USERS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">PK id · UK email<BR ALIGN="LEFT"/>role · district<BR ALIGN="LEFT"/>FK person_id (unique, nullable)</TD></TR></TABLE>>];
+    sessions [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>AUTH_SESSIONS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">PK token digest · FK user<BR ALIGN="LEFT"/>expiry · revoked · CSRF</TD></TR></TABLE>>];
+    identifiers [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>AUTH_IDENTIFIERS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Provider identifier mapping<BR ALIGN="LEFT"/>FK user · verified state<BR ALIGN="LEFT"/>Contact alone is not identity</TD></TR></TABLE>>];
+    challenges [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>AUTH_CHALLENGES</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Opaque challenge · OTP hash<BR ALIGN="LEFT"/>purpose · expiry · attempts · used</TD></TR></TABLE>>];
+    persons [label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>PERSONS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">PK id · UK public_id<BR ALIGN="LEFT"/>name · Gujarati name · DOB<BR ALIGN="LEFT"/>life status · revision</TD></TR></TABLE>>];
+    families [label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>FAMILIES</B></FONT></TD></TR><TR><TD ALIGN="LEFT">PK id · UK public_id<BR ALIGN="LEFT"/>address · district · revision</TD></TR></TABLE>>];
+    memberships [label=<<TABLE BORDER="1" COLOR="#D06A1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>MEMBERSHIPS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">FK family · person<BR ALIGN="LEFT"/>relationship · valid interval<BR ALIGN="LEFT"/>UK current person membership</TD></TR></TABLE>>];
+    representatives [label=<<TABLE BORDER="1" COLOR="#D06A1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>REPRESENTATIVES</B></FONT></TD></TR><TR><TD ALIGN="LEFT">FK family · person<BR ALIGN="LEFT"/>valid interval<BR ALIGN="LEFT"/>UK current representative</TD></TR></TABLE>>];
+    grants [label=<<TABLE BORDER="1" COLOR="#D06A1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>REPRESENTATIONS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">guardian · represented person<BR ALIGN="LEFT"/>basis · valid_until · active</TD></TR></TABLE>>];
+    { rank=same; users; sessions; identifiers; challenges; }
+    { rank=same; persons; memberships; families; representatives; grants; }
+    registry_anchor -> users [style=invis, constraint=true, weight=80];
+    users -> persons [style=invis, constraint=true, weight=80];
+  }
+
+  subgraph cluster_cases {
+    label=<<FONT COLOR="#263F69" POINT-SIZE="14"><B>APPLICATIONS &amp; ACCOUNTABILITY</B></FONT>>;
+    color="#5B88AA"; style="rounded,dashed"; penwidth=1.4; margin=20;
+    cases_anchor [shape=point, width=0.01, label="", style=invis, group="spine"];
+    apps [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>APPLICATIONS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">PK id · UK submitted reference<BR ALIGN="LEFT"/>owner · submitter · family<BR ALIGN="LEFT"/>kind · branch · status · revision<BR ALIGN="LEFT"/>policy + versioned payload</TD></TR></TABLE>>];
+    events [label=<<TABLE BORDER="1" COLOR="#D06A1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>APPLICATION_EVENTS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">FK application · actor<BR ALIGN="LEFT"/>transition · reason · snapshot</TD></TR></TABLE>>];
+    facts [label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>FACT_HISTORY</B></FONT></TD></TR><TR><TD ALIGN="LEFT">family · person · application<BR ALIGN="LEFT"/>old + new · source<BR ALIGN="LEFT"/>effective + recorded time</TD></TR></TABLE>>];
+    evidence [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>EVIDENCE</B></FONT></TD></TR><TR><TD ALIGN="LEFT">application · owner · storage key<BR ALIGN="LEFT"/>hash · type · size · quarantine</TD></TR></TABLE>>];
+    grievances [label=<<TABLE BORDER="1" COLOR="#91450F" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#91450F"><FONT COLOR="white"><B>GRIEVANCES</B></FONT></TD></TR><TR><TD ALIGN="LEFT">owner · application · reference<BR ALIGN="LEFT"/>jurisdiction · status · response</TD></TR></TABLE>>];
+    { rank=same; apps; events; facts; }
+    { rank=same; evidence; grievances; }
+    cases_anchor -> apps [style=invis, constraint=true, weight=80];
+    apps -> evidence [style=invis, constraint=true, weight=80];
+  }
+
+  subgraph cluster_schemes {
+    label=<<FONT COLOR="#7A3A0B" POINT-SIZE="14"><B>SCHEMES, DECISIONS &amp; SOURCE REPORTS</B></FONT>>;
+    color="#D06A1C"; style="rounded,dashed"; penwidth=1.4; margin=20;
+    schemes_anchor [shape=point, width=0.01, label="", style=invis, group="spine"];
+    schemes [label=<<TABLE BORDER="1" COLOR="#D06A1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>SCHEMES</B></FONT></TD></TR><TR><TD ALIGN="LEFT">PK id · UK slug<BR ALIGN="LEFT"/>bilingual content · source<BR ALIGN="LEFT"/>capability · status · revision</TD></TR></TABLE>>];
+    referrals [label=<<TABLE BORDER="1" COLOR="#D06A1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>SCHEME_APPLICATIONS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">owner · scheme · person<BR ALIGN="LEFT"/>UK owner + scheme<BR ALIGN="LEFT"/>reference · status · consent</TD></TR></TABLE>>];
+    payments [label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>PAYMENT_ORDERS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">UK scheme_application<BR ALIGN="LEFT"/>person · scheme · sanctioned_by<BR ALIGN="LEFT"/>amount · status · provider reference</TD></TR></TABLE>>];
+    payment_events [label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>PAYMENT_EVENTS + SCOPES</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Event: order · actor · transition<BR ALIGN="LEFT"/>Scope: staff user + scheme</TD></TR></TABLE>>];
+    benefits [label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>BENEFITS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">person · scheme · source client<BR ALIGN="LEFT"/>UK department + source reference<BR ALIGN="LEFT"/>status · period · amount / quantity</TD></TR></TABLE>>];
+    clients [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>INTEGRATION_CLIENTS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">owner · purpose · district<BR ALIGN="LEFT"/>scopes · scheme allowlist<BR ALIGN="LEFT"/>credential hash</TD></TR></TABLE>>];
+    { rank=same; schemes; referrals; payments; }
+    { rank=same; payment_events; benefits; clients; }
+    schemes_anchor -> schemes [style=invis, constraint=true, weight=80];
+    schemes -> payment_events [style=invis, constraint=true, weight=80];
+  }
+
+  subgraph cluster_platform {
+    label=<<FONT COLOR="#263F69" POINT-SIZE="14"><B>RELIABILITY, CONTENT &amp; PUBLISHING</B></FONT>>;
+    color="#5B88AA"; style="rounded,dashed"; penwidth=1.4; margin=20;
+    platform_anchor [shape=point, width=0.01, label="", style=invis, group="spine"];
+    outbox [label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>OUTBOX_EVENTS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">event id · aggregate reference<BR ALIGN="LEFT"/>status · attempts · available time</TD></TR></TABLE>>];
+    deliveries [label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>EVENT_DELIVERIES</B></FONT></TD></TR><TR><TD ALIGN="LEFT">UK event_id · destination<BR ALIGN="LEFT"/>delivered time</TD></TR></TABLE>>];
+    idempotency [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>IDEMPOTENCY_RECORDS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">actor · operation · key<BR ALIGN="LEFT"/>request digest · stored response</TD></TR></TABLE>>];
+    notifications [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>NOTIFICATIONS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">FK user · message · link<BR ALIGN="LEFT"/>read flag · created time</TD></TR></TABLE>>];
+    audit [label=<<TABLE BORDER="1" COLOR="#91450F" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#91450F"><FONT COLOR="white"><B>AUDIT_EVENTS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">actor · subject · action · purpose<BR ALIGN="LEFT"/>object · event hash · time</TD></TR></TABLE>>];
+    content [label=<<TABLE BORDER="1" COLOR="#D06A1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>CONTENT + VERSIONS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">slug · bilingual plain content<BR ALIGN="LEFT"/>revision · actor · snapshot</TD></TR></TABLE>>];
+    rate [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>RATE_BUCKETS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">abuse counter key · count<BR ALIGN="LEFT"/>reset time</TD></TR></TABLE>>];
+    { rank=same; outbox; deliveries; idempotency; notifications; }
+    { rank=same; audit; content; rate; }
+    platform_anchor -> outbox [style=invis, constraint=true, weight=80];
+    outbox -> audit [style=invis, constraint=true, weight=80];
+  }
+
+  users -> sessions [label="1 : many"];
+  users -> identifiers [label="1 : many"];
+  users -> challenges [label="mapped subject"];
+  users -> persons [label="optional link"];
+  persons -> memberships [label="1 : history"];
+  families -> memberships [label="1 : many"];
+  families -> representatives [label="1 : history"];
+  persons -> grants [label="guardian / subject"];
+  users -> apps [label="owns"];
+  apps -> families [label="result / affected"];
+  apps -> events [label="1 : many"];
+  apps -> facts [label="1 : many"];
+  apps -> evidence [label="1 : many"];
+  apps -> grievances [label="optional"];
+  schemes -> referrals [label="1 : many"];
+  referrals -> payments [label="1 : 0..1"];
+  payments -> payment_events [label="history"];
+  payments -> benefits [label="reported state"];
+  schemes -> benefits [label="1 : many"];
+  persons -> benefits [label="1 : many"];
+  clients -> benefits [label="source"];
+  users -> clients [label="owner"];
+  outbox -> deliveries [label="1 : 0..1"];
+  apps -> outbox [style=dashed, label="atomic event"];
+  users -> notifications [label="1 : many"];
+  users -> audit [style=dashed, label="actor / subject"];
+  idempotency -> apps [style=dashed, label="command scope"];
+
+  registry_anchor -> cases_anchor [style=invis, constraint=true, weight=120, minlen=3];
+  cases_anchor -> schemes_anchor [style=invis, constraint=true, weight=120, minlen=3];
+  schemes_anchor -> platform_anchor [style=invis, constraint=true, weight=120, minlen=3];
+
+  legend [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" COLOR="#B7C9D8" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>ACCOUNT / CONTROL</B></FONT></TD><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>CORE / DURABLE STATE</B></FONT></TD><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>LINK / ACTION</B></FONT></TD><TD BGCOLOR="#91450F"><FONT COLOR="white"><B>REMEDY / AUDIT</B></FONT></TD></TR></TABLE>>];
+  platform_anchor -> legend [style=invis, constraint=true, weight=80];
+}

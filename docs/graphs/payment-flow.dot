@@ -1,0 +1,54 @@
+digraph payments {
+  graph [rankdir=TB, bgcolor="#FFFFFF", pad="0.45", nodesep="0.48", ranksep="0.54", splines=ortho, fontname="DejaVu Sans", fontsize=26, labelloc=t, labeljust=l,
+    label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0"><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="28"><B>Scheme Decision &amp; Payment Register</B></FONT></TD><TD WIDTH="120"></TD><TD BGCOLOR="#263F69" BORDER="1" COLOR="#D06A1C" CELLPADDING="10"><FONT COLOR="white" POINT-SIZE="15"><B>ACTUAL LOCAL · SIMULATED PROVIDER</B></FONT></TD></TR><TR><TD ALIGN="LEFT" COLSPAN="3"><FONT COLOR="#43566F" POINT-SIZE="13">Gujarat Kutumb Setu  |  Traceable decisions without claiming that local tests move public funds</FONT></TD></TR></TABLE>>];
+  node [shape=box, style="rounded,filled", fillcolor="#FFFFFF", color="#5B88AA", penwidth=1.3, fontname="DejaVu Sans", fontsize=11, margin="0.20,0.14"];
+  edge [color="#6D9BBC", penwidth=1.15, fontcolor="#24364B", fontname="DejaVu Sans", fontsize=9.5, arrowsize=0.72, constraint=false];
+
+  a1 [shape=point, width=0.01, label="", style=invis, group="spine"];
+  a2 [shape=point, width=0.01, label="", style=invis, group="spine"];
+  a3 [shape=point, width=0.01, label="", style=invis, group="spine"];
+  a4 [shape=point, width=0.01, label="", style=invis, group="spine"];
+
+  start [shape=circle, fixedsize=true, width=0.55, label="", fillcolor="#62676C", color="#62676C"];
+  candidate [label="SCHEME INFORMATION\nPossible relevance only\nNot an award or legal entitlement", fillcolor="#263F69", color="#263F69", fontcolor="white"];
+  referral [label="AUTHORIZE REFERRAL\nPersist consent, reference and\ndeduplicated application intent", fillcolor="#C65D0B", color="#C65D0B", fontcolor="white"];
+  decision [shape=diamond, label="Scoped scheme officer\ndecision + reason?", fillcolor="#FFFFFF", color="#557B2C", width=2.2, height=1.05];
+  rejected [label="REJECTED\nReason and history retained\nGrievance route remains available", fillcolor="#F8EEE8", color="#91450F"];
+  sanctioned [label="SANCTIONED\nExact positive amount + period\nOne order per scheme application", fillcolor="#EDF4E6", color="#557B2C"];
+  process [label="PROCESS PAYMENT ORDER\nRevision · idempotency · officer scope\nProvider result is always recorded", fillcolor="#C65D0B", color="#C65D0B", fontcolor="white"];
+  provider [shape=cylinder, label="PAYMENT PROVIDER ADAPTER\nLocal mode: deterministic fake register\nProduction: approved provider only", fillcolor="#F3F7FA", color="#5B88AA", height=1.05];
+  result [shape=diamond, label="Provider\nresult?", fillcolor="#FFFFFF", color="#5B88AA", width=1.55, height=0.95];
+  paid [label="PAID\nCommit provider reference + event\nUpdate benefit/passbook projection", fillcolor="#557B2C", color="#557B2C", fontcolor="white"];
+  failed [label="FAILED\nPreserve reason and attempt history\nNever issue a paid receipt", fillcolor="#FFF7ED", color="#D06A1C"];
+  retry [label="AUTHORIZED RETRY\nNew intent · same controlled order", fillcolor="#C65D0B", color="#C65D0B", fontcolor="white"];
+  reverse [shape=diamond, label="Authorized reversal\nrequested?", fillcolor="#FFFFFF", color="#91450F", width=1.9, height=0.95];
+  reversed [label="REVERSED\nReason + provider outcome retained\nOriginal paid event remains immutable", fillcolor="#F8EEE8", color="#91450F"];
+  passbook [label="CITIZEN BENEFIT REGISTER\nNamed subject · scheme · period\nPaid / failed / reversed status", fillcolor="#263F69", color="#263F69", fontcolor="white"];
+  end [shape=circle, fixedsize=true, width=0.55, label="", fillcolor="#62676C", color="#62676C"];
+  gate [shape=note, label="PRODUCTION ACCEPTANCE GATE\nOwner mandate · authenticated callback\nSettlement reconciliation · security approval\nNo browser-selected payment outcome", fillcolor="#FFF7ED", color="#D06A1C"];
+
+  { rank=same; a1; start; candidate; referral; decision; }
+  { rank=same; a2; rejected; sanctioned; process; provider; }
+  { rank=same; a3; retry; failed; result; paid; reverse; }
+  { rank=same; a4; gate; reversed; passbook; end; }
+  a1 -> a2 [style=invis, constraint=true, weight=120, minlen=3];
+  a2 -> a3 [style=invis, constraint=true, weight=120, minlen=3];
+  a3 -> a4 [style=invis, constraint=true, weight=120, minlen=3];
+  start -> candidate -> referral -> decision;
+  decision -> rejected [label="reject"];
+  decision -> sanctioned [label="sanction"];
+  sanctioned -> process -> provider -> result;
+  result -> paid [label="success"];
+  result -> failed [label="failure"];
+  failed -> retry -> process;
+  paid -> reverse;
+  reverse -> reversed [label="yes"];
+  reverse -> passbook [label="no"];
+  reversed -> passbook;
+  rejected -> end;
+  passbook -> end;
+  provider -> gate [style=dashed, label="adapter boundary", constraint=false];
+
+  legend [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" COLOR="#B7C9D8" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>REGISTER / OUTPUT</B></FONT></TD><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>CONTROLLED ACTION</B></FONT></TD><TD BGCOLOR="#EDF4E6"><FONT COLOR="#33531C"><B>SANCTION / SUCCESS</B></FONT></TD><TD BGCOLOR="#F8EEE8"><FONT COLOR="#6F3108"><B>REJECT / REVERSE</B></FONT></TD></TR></TABLE>>];
+  end -> legend [style=invis];
+}

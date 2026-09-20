@@ -1,0 +1,65 @@
+digraph target {
+  graph [rankdir=TB, bgcolor="#FFFFFF", pad="0.48", nodesep="0.48", ranksep="0.68", splines=spline,
+    fontname="DejaVu Sans", fontsize=26, labelloc=t, labeljust=l,
+    label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0"><TR><TD ALIGN="LEFT"><FONT POINT-SIZE="28"><B>Target Domain Relationships</B></FONT></TD><TD WIDTH="170"></TD><TD BGCOLOR="#263F69" BORDER="1" COLOR="#D06A1C" CELLPADDING="10"><FONT COLOR="white" POINT-SIZE="15"><B>PROPOSED TARGET DOMAIN</B></FONT></TD></TR><TR><TD ALIGN="LEFT" COLSPAN="3"><FONT COLOR="#43566F" POINT-SIZE="13">Gujarat Kutumb Setu  |  Conceptual extensions; not every entity is migrated in the local implementation</FONT></TD></TR></TABLE>>];
+  node [shape=plain, fontname="DejaVu Sans", fontsize=10];
+  edge [color="#86A9C1", penwidth=1.05, fontcolor="#31465C", fontname="DejaVu Sans", fontsize=8.5, arrowsize=0.65];
+
+  subgraph cluster_registry {
+    label=<<FONT COLOR="#33531C" POINT-SIZE="14"><B>AUTHORITATIVE FAMILY DOMAIN</B></FONT>>;
+    color="#557B2C"; style="rounded,dashed"; penwidth=1.4; margin=20;
+    person [label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>PERSON</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Stable identity · name history<BR ALIGN="LEFT"/>Life-status assertions</TD></TR></TABLE>>];
+    family [label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>FAMILY</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Stable reference · lineage<BR ALIGN="LEFT"/>No universal family caste</TD></TR></TABLE>>];
+    membership [label=<<TABLE BORDER="1" COLOR="#D06A1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>DATED MEMBERSHIP</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Person · family · effective interval<BR ALIGN="LEFT"/>Approved, disputed, source-aware</TD></TR></TABLE>>];
+    relation [label=<<TABLE BORDER="1" COLOR="#D06A1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>RELATIONSHIP + ROLE</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Spouse · dependent · guardian evidence<BR ALIGN="LEFT"/>Dated representative authority</TD></TR></TABLE>>];
+    address [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>ADDRESS + JURISDICTION</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Versioned official codes<BR ALIGN="LEFT"/>Residence is not property title</TD></TR></TABLE>>];
+    access [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>ACCESS + AUTHORITY</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Accounts · sessions · scoped grants<BR ALIGN="LEFT"/>Purpose · notice · jurisdiction</TD></TR></TABLE>>];
+  }
+
+  subgraph cluster_evidence {
+    label=<<FONT COLOR="#263F69" POINT-SIZE="14"><B>EVIDENCE, SOURCES &amp; ACCOUNTABLE CASEWORK</B></FONT>>;
+    color="#5B88AA"; style="rounded,dashed"; penwidth=1.4; margin=20;
+    facts [label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>ASSERTIONS + EVIDENCE</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Subject · source · verification · dates<BR ALIGN="LEFT"/>Certificate type + list version</TD></TR></TABLE>>];
+    sources [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>SOURCE OWNER + ALIAS</B></FONT></TD></TR><TR><TD ALIGN="LEFT">PDS · certificates · civil registry<BR ALIGN="LEFT"/>Typed protected identifiers</TD></TR></TABLE>>];
+    cases [label=<<TABLE BORDER="1" COLOR="#D06A1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>APPLICATION + CASE HISTORY</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Draft · revisions · assignments<BR ALIGN="LEFT"/>Verify · decide · amend · appeal</TD></TR></TABLE>>];
+    discrepancy [label=<<TABLE BORDER="1" COLOR="#91450F" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#91450F"><FONT COLOR="white"><B>RECONCILIATION + GRIEVANCE</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Import checkpoints · quarantine<BR ALIGN="LEFT"/>Conflict + accountable remedy</TD></TR></TABLE>>];
+  }
+
+  subgraph cluster_scheme {
+    label=<<FONT COLOR="#7A3A0B" POINT-SIZE="14"><B>POLICY ASSESSMENT &amp; BENEFIT REPORTING</B></FONT>>;
+    color="#D06A1C"; style="rounded,dashed"; penwidth=1.4; margin=20;
+    policy [label=<<TABLE BORDER="1" COLOR="#D06A1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>SCHEME + POLICY VERSION</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Owner · subject unit · rule dates<BR ALIGN="LEFT"/>Approved integration capabilities</TD></TR></TABLE>>];
+    assessment [label=<<TABLE BORDER="1" COLOR="#D06A1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>ASSESSMENT SNAPSHOT</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Members · contributors · facts<BR ALIGN="LEFT"/>Financial year · reason · freshness</TD></TR></TABLE>>];
+    subject [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>EXTERNAL SCHEME SUBJECT</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Connection · parcel · animal · enterprise<BR ALIGN="LEFT"/>Dated beneficiary role, not inferred title</TD></TR></TABLE>>];
+    referral [label=<<TABLE BORDER="1" COLOR="#D06A1C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>REFERRAL + OWNER DECISION</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Contact · authority · application<BR ALIGN="LEFT"/>Department sanction remains distinct</TD></TR></TABLE>>];
+    benefit [label=<<TABLE BORDER="1" COLOR="#557B2C" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>BENEFIT REPORT</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Source event · person · period<BR ALIGN="LEFT"/>Paid · in-kind · failed · reversed</TD></TR></TABLE>>];
+    client [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>DEPARTMENT CLIENT</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Purpose · scopes · scheme allowlist<BR ALIGN="LEFT"/>Revocable credential + agreement</TD></TR></TABLE>>];
+  }
+
+  reliability [label=<<TABLE BORDER="1" COLOR="#5B88AA" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>RELIABILITY + ACCOUNTABILITY</B></FONT></TD></TR><TR><TD ALIGN="LEFT">Idempotency · outbox · inbox · disclosures<BR ALIGN="LEFT"/>Purpose-bound protected audit</TD></TR></TABLE>>];
+
+  person -> membership [label="one to dated many"];
+  family -> membership [label="one to dated many"];
+  person -> relation [label="typed relation"];
+  family -> address [label="dated address"];
+  access -> person [label="authorized subject"];
+  access -> cases [label="permitted action"];
+  person -> facts [label="individual facts"];
+  sources -> facts [label="authority + provenance"];
+  sources -> discrepancy [label="import / conflict"];
+  cases -> family [label="approved change"];
+  cases -> discrepancy [label="review / appeal"];
+  facts -> assessment [label="as-of evidence"];
+  membership -> assessment [label="dated member set"];
+  relation -> assessment [label="contributors"];
+  policy -> assessment [label="versioned rule"];
+  subject -> assessment [label="typed subject"];
+  assessment -> referral [label="candidate · not award"];
+  referral -> benefit [label="owner outcome"];
+  client -> benefit [label="unique source event"];
+  client -> sources [label="agreement + scope"];
+  cases -> reliability [style=dashed, label="atomic event"];
+  benefit -> reliability [style=dashed, label="dedupe + audit"];
+
+  legend [shape=plain, label=<<TABLE BORDER="0" CELLBORDER="1" COLOR="#B7C9D8" CELLSPACING="0" CELLPADDING="5"><TR><TD BGCOLOR="#263F69"><FONT COLOR="white"><B>AUTHORITY / SOURCE</B></FONT></TD><TD BGCOLOR="#557B2C"><FONT COLOR="white"><B>AUTHORITATIVE STATE</B></FONT></TD><TD BGCOLOR="#C65D0B"><FONT COLOR="white"><B>ACTION / POLICY</B></FONT></TD><TD BGCOLOR="#91450F"><FONT COLOR="white"><B>CONFLICT / REMEDY</B></FONT></TD></TR></TABLE>>];
+}

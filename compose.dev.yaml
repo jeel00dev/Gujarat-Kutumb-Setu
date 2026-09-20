@@ -1,0 +1,5 @@
+# Optional host developer ports; never needed for the Docker website.
+services:
+  api:
+    ports:
+      - "127.0.0.1:8005:8000"
