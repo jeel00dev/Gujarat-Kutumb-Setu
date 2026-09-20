@@ -6,6 +6,12 @@ Local, persistent family-registry application: Gujarati/English resident portal,
 
 This is a working **synthetic local release**, not authorization to launch a statewide government registry. Real Aadhaar/PDS/SSO/SMS/treasury connectors, approved policies/brand assets, assurance and scale testing are explicit release gates. See [implementation coverage](docs/IMPLEMENTATION_COVERAGE.md) before treating any research-SRS feature as delivered. No real Aadhaar, bank information or citizen records should be entered here.
 
+## Process flow — One Family, One ID
+
+![Process Flow — One Family, One ID](docs/process-flow.jpeg)
+
+Citizen/Jan Sewa Kendra → Parivar Kalyan Portal → ration-card search against PDS → found: update Family Database; not found: Aadhaar e-KYC via UIDAI → provisional Family ID → verification (Panchayat Secretary/Lekhpal) → approved becomes permanent, rejected is marked deleted.
+
 ## Open it on this machine
 
 **http://127.0.0.1:8095**
