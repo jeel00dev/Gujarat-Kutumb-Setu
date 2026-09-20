@@ -1,3 +1,8 @@
+// On GitHub Pages there is no same-origin backend, so API calls fail
+// gracefully (pages show a retryable error box). Point VITE_API_BASE at a
+// live backend URL to make the Pages demo fully functional.
+const API_BASE =
+  import.meta.env.VITE_API_BASE?.replace(/\/$/, "") || "/api/v1";
 let csrfToken = "";
 export function setCsrf(value: string) {
   csrfToken = value;
@@ -17,7 +22,7 @@ export async function api<T = Record<string, unknown>>(
 ): Promise<T> {
   const method = options.method || "GET";
   const isForm = options.body instanceof FormData;
-  const response = await fetch("/api/v1" + path, {
+  const response = await fetch(API_BASE + path, {
     ...options,
     credentials: "include",
     headers: {

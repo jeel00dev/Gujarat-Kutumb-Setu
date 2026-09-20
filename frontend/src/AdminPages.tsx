@@ -983,7 +983,7 @@ export function DeveloperDocs() {
               )}
             </p>
             <a
-              href="/api/v1/openapi.json"
+              href={`${import.meta.env.VITE_API_BASE?.replace(/\/$/, "") || "/api/v1"}/openapi.json`}
               className="button outline full"
               target="_blank"
               rel="noreferrer"

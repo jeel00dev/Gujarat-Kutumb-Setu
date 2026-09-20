@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirecting… · Gujarat Kutumb Setu</title>
+    <script>
+      // Deep-link fallback for the static build (HashRouter).
+      // e.g. /Gujarat-Kutumb-Setu/schemes -> /Gujarat-Kutumb-Setu/#/schemes
+      (function () {
+        var base = "/Gujarat-Kutumb-Setu";
+        var path = location.pathname;
+        var route = path.indexOf(base) === 0 ? path.slice(base.length) : path;
+        var hash = location.hash && location.hash !== "#" ? location.hash : "";
+        var target =
+          base + "/#" + (route && route !== "/" ? route : "/") + hash + location.search;
+        location.replace(target);
+      })();
+    </script>
+    <noscript>
+      <meta http-equiv="refresh" content="0; url=/Gujarat-Kutumb-Setu/" />
+    </noscript>
+  </head>
+  <body>
+    <p>
+      Redirecting to
+      <a href="/Gujarat-Kutumb-Setu/">Gujarat Kutumb Setu</a>…
+    </p>
+  </body>
+</html>

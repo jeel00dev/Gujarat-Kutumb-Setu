@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { AppProvider } from "./context";
 import Layout from "./Layout";
 import {
@@ -150,9 +150,9 @@ export default function App() {
                   This address does not exist. Please use the navigation above
                   to return to a service.
                 </p>
-                <a className="button" href="/">
+                <Link className="button" to="/">
                   Return home · મુખ્ય પૃષ્ઠ
-                </a>
+                </Link>
               </div>
             }
           />
